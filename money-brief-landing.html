@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>머니브리프 | 뉴스 너머, 인사이트가 보인다</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0B1F3A;
+    --navy-mid: #122B4F;
+    --navy-light: #1A3A6B;
+    --gold: #D4A017;
+    --gold-bright: #F5C842;
+    --gold-dim: #8B6914;
+    --green: #00C896;
+    --red: #FF4D6D;
+    --white: #F0EEE9;
+    --gray: #8A9BAE;
+    --border: rgba(212, 160, 23, 0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Noto Sans KR', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(11,31,58,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .nav-logo-main {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+  }
+
+  .nav-logo-sub {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 10px;
+    color: var(--gray);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .nav-cta {
+    background: var(--gold);
+    color: var(--navy);
+    padding: 10px 24px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    border: none;
+    cursor: pointer;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .nav-cta:hover {
+    background: var(--gold-bright);
+    transform: translateY(-1px);
+  }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    position: fixed;
+    top: 73px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background: rgba(11,31,58,0.9);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    height: 36px;
+    display: flex;
+    align-items: center;
+  }
+
+  .ticker-inner {
+    display: flex;
+    gap: 0;
+    animation: tickerScroll 30s linear infinite;
+    white-space: nowrap;
+  }
+
+  @keyframes tickerScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 28px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+  }
+
+  .ticker-name { color: var(--gray); }
+  .ticker-up { color: var(--green); }
+  .ticker-down { color: var(--red); }
+  .ticker-divider { color: var(--border); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 140px 24px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(212,160,23,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,160,23,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .hero-bg-glow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,160,23,0.08) 0%, transparent 70%);
+    top: 50%;
+    right: 5%;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .hero-bg-glow2 {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,200,150,0.06) 0%, transparent 70%);
+    bottom: 10%;
+    left: 10%;
+    pointer-events: none;
+  }
+
+  .hero-content {
+    max-width: 720px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    animation: fadeInUp 0.8s ease both;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    background: rgba(212,160,23,0.05);
+    margin-bottom: 28px;
+  }
+
+  .hero-label-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: blink 2s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero-label-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .hero-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(36px, 5.5vw, 68px);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+
+  .hero-title em {
+    font-style: normal;
+    color: var(--gold);
+  }
+
+  .hero-subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(16px, 2.5vw, 24px);
+    color: var(--gold-bright);
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
+  }
+
+  .hero-desc {
+    font-size: 15px;
+    color: var(--gray);
+    line-height: 1.8;
+    margin-bottom: 40px;
+    max-width: 520px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+    padding: 16px 36px;
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: all 0.25s;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary:hover {
+    background: var(--gold-bright);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(212,160,23,0.3);
+  }
+
+  .btn-secondary {
+    color: var(--gold);
+    padding: 15px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--gold);
+    background: rgba(212,160,23,0.05);
+  }
+
+  /* ── 개별종목 스크롤 바 (차트 내부) ── */
+  .stock-ticker-wrap {
+    overflow: hidden;
+    margin: 0 -24px 16px;
+    border-top: 1px solid rgba(212,160,23,0.12);
+    border-bottom: 1px solid rgba(212,160,23,0.12);
+    background: rgba(11,16,32,0.6);
+    height: 28px;
+    display: flex;
+    align-items: center;
+  }
+
+  .stock-ticker-inner {
+    display: flex;
+    white-space: nowrap;
+    animation: stockScroll 18s linear infinite;
+  }
+
+  @keyframes stockScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .stock-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    border-right: 1px solid rgba(212,160,23,0.1);
+  }
+
+  .stock-sym {
+    color: var(--white);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .stock-up { color: var(--green); }
+  .stock-down { color: var(--red); }
+
+  /* ── FLOATING SIDEBAR WIDGET ── */
+  .floating-widget {
+    position: fixed;
+    top: 120px;
+    right: 28px;
+    width: 300px;
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+  }
+
+  .floating-widget.visible {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .fw-card {
+    background: rgba(14, 21, 37, 0.92);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+  }
+
+  /* 카드1: 픽 */
+  .fw-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px 8px;
+    border-bottom: 1px solid rgba(212,160,23,0.1);
+    gap: 8px;
+  }
+
+  .fw-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--gray);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .fw-badge {
+    background: rgba(0,200,150,0.12);
+    color: var(--green);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    padding: 2px 7px;
+    border: 1px solid rgba(0,200,150,0.25);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .fw-chart {
+    padding: 8px 14px 0;
+  }
+
+  .fw-picks {
+    padding: 4px 0 8px;
+  }
+
+  .fw-pick {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 14px;
+    border-bottom: 1px solid rgba(212,160,23,0.06);
+  }
+
+  .fw-pick:last-child { border-bottom: none; }
+
+  .fw-pick-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .fw-pick-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .fw-pick-sector {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--gray);
+  }
+
+  .fw-pick-stars {
+    font-size: 10px;
+    color: var(--gray);
+    letter-spacing: -1px;
+  }
+
+  .fw-pick-stars.up { color: var(--gold); }
+
+  /* 카드2: 종목 테이블 */
+  .fw-stocks-card { }
+
+  .fw-stocks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid rgba(212,160,23,0.1);
+  }
+
+  .fw-stocks-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .fw-stocks-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--gray);
+  }
+
+  .fw-stocks-table {
+    padding: 6px 0;
+  }
+
+  .fw-stock-row {
+    display: grid;
+    grid-template-columns: 44px 1fr 60px;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 14px;
+  }
+
+  .fw-stock-sym {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .fw-stock-bar-wrap {
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .fw-stock-bar {
+    height: 100%;
+    background: var(--green);
+    border-radius: 2px;
+    opacity: 0.7;
+  }
+
+  .fw-stock-bar.down {
+    background: var(--red);
+  }
+
+  .fw-stock-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    text-align: right;
+  }
+
+  .fw-stock-row.up .fw-stock-val { color: var(--green); }
+  .fw-stock-row.down .fw-stock-val { color: var(--red); }
+
+  @media (max-width: 1200px) {
+    .floating-widget { display: none; }
+  }
+
+  /* ── FEATURES ── */
+  /* ── CONTAINER (전체 통일 너비) ── */
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* ── SECTIONS (배경만 full-width, 내용은 container로 제한) ── */
+  .section {
+    padding: 80px 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .section-label-line {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .section-label-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+
+  .section-title em { font-style: normal; color: var(--gold); }
+
+  .section-desc {
+    font-size: 15px;
+    color: var(--gray);
+    line-height: 1.8;
+    max-width: 540px;
+    margin-bottom: 60px;
+  }
+
+  /* Features grid */
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    background: var(--border);
+  }
+
+  .feature-card {
+    background: var(--navy-mid);
+    padding: 28px 32px;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 0;
+    background: var(--gold);
+    transition: height 0.4s ease;
+  }
+
+  .feature-card:hover::before { height: 100%; }
+  .feature-card:hover { background: var(--navy-light); }
+
+  .feature-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: block;
+  }
+
+  .feature-body { flex: 1; }
+
+  .feature-number {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--gold-dim);
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
+  }
+
+  .feature-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+
+  .feature-desc {
+    font-size: 14px;
+    color: var(--gray);
+    line-height: 1.8;
+  }
+
+  .feature-tag {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 4px 12px;
+    background: rgba(212,160,23,0.1);
+    border: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── BULL BEAR SECTION ── */
+  .bull-bear {
+    background: var(--navy-mid);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 24px;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .bull-bear-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .bull-bear-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  .bull-side, .bear-side {
+    padding: 32px;
+    border: 1px solid;
+  }
+
+  .bull-side {
+    border-color: rgba(0,200,150,0.3);
+    background: rgba(0,200,150,0.03);
+  }
+
+  .bear-side {
+    border-color: rgba(255,77,109,0.3);
+    background: rgba(255,77,109,0.03);
+  }
+
+  .side-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .side-icon {
+    font-size: 28px;
+  }
+
+  .side-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .bull-side .side-title { color: var(--green); }
+  .bear-side .side-title { color: var(--red); }
+
+  .side-points {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .side-point {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #C5D0DC;
+  }
+
+  .point-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+
+  .bull-side .point-dot { background: var(--green); }
+  .bear-side .point-dot { background: var(--red); }
+
+  .vs-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .vs-circle {
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gold);
+    background: var(--navy);
+  }
+
+  .sample-news {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: rgba(11,31,58,0.6);
+    border-left: 3px solid var(--gold);
+  }
+
+  .sample-news-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--gold-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .sample-news-text {
+    font-size: 13px;
+    color: var(--white);
+    line-height: 1.6;
+    font-weight: 500;
+  }
+
+  .sample-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .sample-tag {
+    padding: 3px 10px;
+    background: rgba(212,160,23,0.1);
+    border: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--gold);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how-section {
+    padding: 80px 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 760px;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 0;
+    position: relative;
+  }
+
+  .step-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .step-num {
+    width: 48px;
+    height: 48px;
+    background: var(--navy-mid);
+    border: 1px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .step-line {
+    width: 1px;
+    flex: 1;
+    background: rgba(212,160,23,0.2);
+    min-height: 40px;
+  }
+
+  .step:last-child .step-line { display: none; }
+
+  .step-content {
+    padding: 0 0 48px 24px;
+  }
+
+  .step-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 8px;
+    padding-top: 10px;
+  }
+
+  .step-desc {
+    font-size: 14px;
+    color: var(--gray);
+    line-height: 1.8;
+  }
+
+  /* ── NEWSLETTER PREVIEW ── */
+  .preview-section {
+    padding: 80px 24px;
+    position: relative;
+    z-index: 2;
+    background: #080c18;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nl-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    background: #0e0e14;
+    border-radius: 18px;
+    border: 1px solid #1e2a45;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(245,158,11,0.08);
+  }
+
+  @media (max-width: 900px) {
+    .nl-wrap { margin: 0; }
+    .nl-wrap [style*="grid-template-columns:1fr 1fr 1fr 1fr"] {
+      grid-template-columns: 1fr 1fr !important;
+    }
+  }
+
+  .email-mock {
+    max-width: 620px;
+    margin: 0 auto;
+    background: #0e0e14;
+    color: #f1f5f9;
+    border: 1px solid #1e2a45;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,160,23,0.1);
+  }
+
+  .email-header-bar {
+    background: #1a1f36;
+    padding: 16px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #2a3358;
+  }
+
+  .email-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: #f59e0b;
+    letter-spacing: 0.12em;
+  }
+
+  .email-date {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: #4a5578;
+    letter-spacing: 0.1em;
+  }
+
+  .email-body {
+    padding: 20px 24px;
+    background: #131929;
+  }
+
+  .email-greeting { display: none; }
+  .email-opening { display: none; }
+
+  .email-divider {
+    height: 1px;
+    background: #1e2a45;
+    margin: 16px 0;
+  }
+
+  .email-news-item {
+    margin-bottom: 10px;
+    padding: 14px 16px;
+    border: 1px solid #1e2a45;
+    background: #0e1525;
+    border-radius: 10px;
+  }
+
+  .email-news-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .email-importance {
+    background: #1e2a45;
+    color: #fbbf24;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .email-sector {
+    font-size: 11px;
+    color: #4a5578;
+  }
+
+  .email-news-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  .email-news-insight {
+    font-size: 12px;
+    color: #8892b0;
+    line-height: 1.6;
+  }
+
+  .email-bull-bear-mini {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .email-bull-mini {
+    padding: 8px 10px;
+    background: rgba(0,200,150,0.05);
+    border: 1px solid rgba(74,222,128,0.2);
+    font-size: 11px;
+    color: #86efac;
+    line-height: 1.5;
+    border-radius: 6px;
+  }
+
+  .email-bear-mini {
+    padding: 8px 10px;
+    background: rgba(248,113,113,0.05);
+    border: 1px solid rgba(127,29,29,0.4);
+    font-size: 11px;
+    color: #fca5a5;
+    line-height: 1.5;
+    border-radius: 6px;
+  }
+
+  .email-mini-label {
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .email-footer-bar {
+    background: #0b1020;
+    padding: 14px 28px;
+    text-align: center;
+    font-size: 11px;
+    color: #4a5578;
+    border-top: 1px solid #1e2a45;
+  }
+
+  /* ── SOCIAL PROOF ── */
+  .stats-section {
+    padding: 80px 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 60px;
+  }
+
+  .stat-card {
+    background: var(--navy-mid);
+    padding: 28px 36px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .stat-val {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 700;
+    color: var(--gold);
+    display: block;
+    flex-shrink: 0;
+    min-width: 120px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    padding: 100px 24px;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,160,23,0.06) 0%, transparent 65%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .cta-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(28px, 4vw, 56px);
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.25;
+    margin-bottom: 20px;
+  }
+
+  .cta-title em { font-style: normal; color: var(--gold); }
+
+  .cta-desc {
+    font-size: 16px;
+    color: var(--gray);
+    margin-bottom: 48px;
+    line-height: 1.8;
+  }
+
+  .cta-form {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto 24px;
+    gap: 0;
+  }
+
+  .cta-input {
+    flex: 1;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-right: none;
+    color: var(--white);
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .cta-input:focus { border-color: var(--gold); }
+  .cta-input::placeholder { color: var(--gray); }
+
+  .cta-submit {
+    padding: 16px 28px;
+    background: var(--gold);
+    border: 1px solid var(--gold);
+    color: var(--navy);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+
+  .cta-submit:hover { background: var(--gold-bright); }
+
+  .cta-note {
+    font-size: 12px;
+    color: var(--gray);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 40px 24px;
+    border-top: 1px solid var(--border);
+    position: relative;
+    z-index: 2;
+  }
+
+  .footer-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: var(--gold);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .footer-by {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+
+  .footer-right {
+    font-size: 12px;
+    color: var(--gray);
+    text-align: right;
+  }
+
+  /* ── BENEFITS ── */
+  .benefits-section {
+    padding: 80px 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 60px;
+  }
+
+  .benefit-card {
+    background: var(--navy-mid);
+    padding: 28px 32px;
+    position: relative;
+    transition: background 0.3s;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .benefit-card:hover { background: var(--navy-light); }
+
+  .benefit-icon {
+    font-size: 36px;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .benefit-content {
+    flex: 1;
+  }
+
+  .benefit-icon {
+    font-size: 36px;
+    line-height: 1;
+  }
+
+  .benefit-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .benefit-desc {
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.8;
+  }
+
+  .benefit-badge {
+    display: inline-block;
+    margin-top: auto;
+    padding: 4px 12px;
+    background: rgba(212,160,23,0.1);
+    border: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    align-self: flex-start;
+  }
+
+  /* 웰컴 카드 미리보기 */
+  .welcome-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .welcome-card {
+    width: 100%;
+    max-width: 480px;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,160,23,0.15);
+  }
+
+  .welcome-top {
+    padding: 32px 28px 24px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+  }
+
+  .welcome-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: #111;
+    margin-bottom: 12px;
+  }
+
+  .welcome-desc {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.8;
+  }
+
+  .welcome-buttons {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #fafafa;
+  }
+
+  .welcome-btn {
+    padding: 14px 18px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #222;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+  }
+
+  .welcome-btn-gold {
+    background: #fff8e6;
+    border-color: #f0c040;
+    color: #7a5a00;
+    font-weight: 700;
+  }
+
+  .welcome-caption {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 900px) {
+    .benefits-section { padding: 70px 24px; }
+    .benefits-grid { grid-template-columns: 1fr; }
+    .welcome-card { max-width: 100%; }
+  }
+
+  /* ── STIBEE FORM OVERRIDES ── */
+  .stibee-wrap {
+    max-width: 500px;
+    margin: 0 auto 24px;
+  }
+
+  #stb_subscribe,
+  #stb_subscribe_form,
+  .stb_form {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .stb_form_title { display: none !important; }
+
+  .stb_form_set {
+    border: none !important;
+    padding: 0 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .stb_form_set_label {
+    display: none !important;
+  }
+
+  .stb_form_set_input {
+    width: 100% !important;
+    padding: 16px 20px !important;
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 0 !important;
+    color: var(--white) !important;
+    font-size: 14px !important;
+    font-family: 'Noto Sans KR', sans-serif !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    transition: border-color 0.2s !important;
+  }
+
+  .stb_form_set_input:focus {
+    border-color: var(--gold) !important;
+  }
+
+  .stb_form_set_input::placeholder {
+    color: var(--gray) !important;
+  }
+
+  .stb_form_policy {
+    margin-bottom: 14px !important;
+    text-align: center !important;
+  }
+
+  .stb_form_policy label {
+    font-size: 12px !important;
+    color: var(--gray) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+  }
+
+  .stb_form_policy input[type="checkbox"] {
+    accent-color: var(--gold) !important;
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .stb_form_modal_open_btn {
+    background: none !important;
+    border: none !important;
+    color: var(--gold) !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+    text-decoration: underline !important;
+    padding: 0 !important;
+  }
+
+  .stb_form_set_submit {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .stb_form_submit_button {
+    width: 100% !important;
+    padding: 16px !important;
+    background: var(--gold) !important;
+    color: var(--navy) !important;
+    border: none !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    font-family: 'Noto Sans KR', sans-serif !important;
+    cursor: pointer !important;
+    letter-spacing: 0.05em !important;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%) !important;
+    transition: background 0.2s !important;
+  }
+
+  .stb_form_submit_button:hover {
+    background: var(--gold-bright) !important;
+  }
+
+  .stb_form_msg_error {
+    color: #f87171 !important;
+    font-size: 12px !important;
+    margin-top: 4px !important;
+  }
+
+  .stb_form_result {
+    text-align: center !important;
+    font-size: 14px !important;
+    color: var(--green) !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* 개인정보 모달 */
+  .stb_form_modal_body {
+    background: var(--navy-mid) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--white) !important;
+    border-radius: 12px !important;
+  }
+
+  .stb_form_modal_title {
+    color: var(--gold) !important;
+    font-size: 16px !important;
+  }
+
+  .stb_form_modal_text {
+    color: var(--gray) !important;
+    font-size: 13px !important;
+    line-height: 1.8 !important;
+  }
+
+  .stb_form_modal_close_btn {
+    background: var(--gold) !important;
+    color: var(--navy) !important;
+    border: none !important;
+    padding: 8px 20px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    border-radius: 4px !important;
+  }
+  @media (max-width: 900px) {
+    nav { padding: 16px 20px; }
+    .hero { padding: 130px 20px 80px; }
+    .hero-chart { display: none; }
+    .hero-content { max-width: 100%; }
+    .section, .how-section, .stats-section, .preview-section,
+    .benefits-section, .cta-section { padding: 60px 20px; }
+    .bull-bear { margin: 0; padding: 50px 20px; }
+    footer { padding: 28px 20px; }
+    footer .container { flex-direction: column; text-align: center; }
+    .footer-right { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="nav-logo-main">MONEY BRIEF</span>
+    <span class="nav-logo-sub">by 돈공부저장소</span>
+  </div>
+  <a class="nav-cta" href="#subscribe">무료 구독하기</a>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span class="ticker-name">S&amp;P 500</span> <span class="ticker-up">▲ +0.52%</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">NASDAQ</span> <span class="ticker-up">▲ +0.83%</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">DOW</span> <span class="ticker-down">▼ -0.11%</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">VIX</span> <span class="ticker-down">▼ 14.82</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">10Y YIELD</span> <span class="ticker-down">▼ 4.28%</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">WTI</span> <span class="ticker-up">▲ +1.12%</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">GOLD</span> <span class="ticker-up">▲ +0.44%</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">DXY</span> <span class="ticker-down">▼ -0.21%</span></span>
+    <span class="ticker-divider">|</span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item"><span class="ticker-name">S&amp;P 500</span> <span class="ticker-up">▲ +0.52%</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">NASDAQ</span> <span class="ticker-up">▲ +0.83%</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">DOW</span> <span class="ticker-down">▼ -0.11%</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">VIX</span> <span class="ticker-down">▼ 14.82</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">10Y YIELD</span> <span class="ticker-down">▼ 4.28%</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">WTI</span> <span class="ticker-up">▲ +1.12%</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">GOLD</span> <span class="ticker-up">▲ +0.44%</span></span>
+    <span class="ticker-divider">|</span>
+    <span class="ticker-item"><span class="ticker-name">DXY</span> <span class="ticker-down">▼ -0.21%</span></span>
+    <span class="ticker-divider">|</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-bg-glow"></div>
+  <div class="hero-bg-glow2"></div>
+
+  <div class="hero-content">
+    <div class="hero-label">
+      <div class="hero-label-dot"></div>
+      <span class="hero-label-text">FREE NEWSLETTER · 매주 발송</span>
+    </div>
+
+    <h1 class="hero-title">
+      뉴스를 봐도<br>
+      <em>무슨 뜻인지</em><br>
+      모르겠다면?
+    </h1>
+
+    <div class="hero-subtitle">MONEY BRIEF · 머니브리프</div>
+
+    <p class="hero-desc">
+      미국 주식 뉴스, 이제 그냥 읽지 마세요.<br>
+      AI가 선별한 핵심 뉴스에 섹터 분석, 강세·약세 양면 해석까지.<br>
+      입문 투자자도 인사이트를 얻을 수 있는 뉴스레터입니다.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#subscribe" class="btn-primary">지금 무료 구독하기</a>
+      <a href="#preview" class="btn-secondary">샘플 보기 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FLOATING SIDEBAR WIDGET (스크롤 따라 이동) -->
+<div class="floating-widget" id="floatingWidget">
+
+  <!-- 카드 1: 차트 픽 -->
+  <div class="fw-card">
+    <div class="fw-header">
+      <div class="fw-title">THIS WEEK · 머니브리프 픽</div>
+      <div class="fw-badge">AI 선별 완료</div>
+    </div>
+    <div class="fw-chart">
+      <svg viewBox="0 0 280 70" width="100%" height="60">
+        <defs>
+          <linearGradient id="fwGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#D4A017" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#D4A017" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M0 55 L35 50 L70 56 L105 40 L140 34 L175 38 L210 26 L245 18 L280 12" stroke="#D4A017" stroke-width="1.5" fill="none" opacity="0.9"/>
+        <path d="M0 55 L35 50 L70 56 L105 40 L140 34 L175 38 L210 26 L245 18 L280 12 L280 70 L0 70 Z" fill="url(#fwGrad)"/>
+        <circle cx="280" cy="12" r="3" fill="#D4A017"/>
+      </svg>
+    </div>
+    <div class="fw-picks">
+      <div class="fw-pick">
+        <div class="fw-pick-left">
+          <span class="fw-pick-name">Fed 금리 동결 결정</span>
+          <span class="fw-pick-sector">금융 · 채권 섹터</span>
+        </div>
+        <span class="fw-pick-stars up">★★★★★</span>
+      </div>
+      <div class="fw-pick">
+        <div class="fw-pick-left">
+          <span class="fw-pick-name">엔비디아 실적 발표</span>
+          <span class="fw-pick-sector">반도체 · AI 섹터</span>
+        </div>
+        <span class="fw-pick-stars up">★★★★★</span>
+      </div>
+      <div class="fw-pick">
+        <div class="fw-pick-left">
+          <span class="fw-pick-name">CPI 지표 예상 하회</span>
+          <span class="fw-pick-sector">거시경제 전반</span>
+        </div>
+        <span class="fw-pick-stars">★★★★☆</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 카드 2: 개별종목 등락률 테이블 -->
+  <div class="fw-card fw-stocks-card">
+    <div class="fw-stocks-header">
+      <span class="fw-stocks-title">📈 주요 종목 등락률</span>
+      <span class="fw-stocks-time">오늘 종가 기준</span>
+    </div>
+    <div class="fw-stocks-table">
+      <div class="fw-stock-row up">
+        <span class="fw-stock-sym">NVDA</span>
+        <div class="fw-stock-bar-wrap"><div class="fw-stock-bar" style="width:72%"></div></div>
+        <span class="fw-stock-val">▲ +2.14%</span>
+      </div>
+      <div class="fw-stock-row up">
+        <span class="fw-stock-sym">AMD</span>
+        <div class="fw-stock-bar-wrap"><div class="fw-stock-bar" style="width:100%"></div></div>
+        <span class="fw-stock-val">▲ +3.07%</span>
+      </div>
+      <div class="fw-stock-row up">
+        <span class="fw-stock-sym">META</span>
+        <div class="fw-stock-bar-wrap"><div class="fw-stock-bar" style="width:48%"></div></div>
+        <span class="fw-stock-val">▲ +1.45%</span>
+      </div>
+      <div class="fw-stock-row up">
+        <span class="fw-stock-sym">AMZN</span>
+        <div class="fw-stock-bar-wrap"><div class="fw-stock-bar" style="width:30%"></div></div>
+        <span class="fw-stock-val">▲ +0.92%</span>
+      </div>
+      <div class="fw-stock-row up">
+        <span class="fw-stock-sym">AAPL</span>
+        <div class="fw-stock-bar-wrap"><div class="fw-stock-bar" style="width:22%"></div></div>
+        <span class="fw-stock-val">▲ +0.67%</span>
+      </div>
+      <div class="fw-stock-row up">
+        <span class="fw-stock-sym">MSFT</span>
+        <div class="fw-stock-bar-wrap"><div class="fw-stock-bar" style="width:12%"></div></div>
+        <span class="fw-stock-val">▲ +0.38%</span>
+      </div>
+      <div class="fw-stock-row down">
+        <span class="fw-stock-sym">GOOGL</span>
+        <div class="fw-stock-bar-wrap"><div class="fw-stock-bar down" style="width:9%"></div></div>
+        <span class="fw-stock-val">▼ -0.28%</span>
+      </div>
+      <div class="fw-stock-row down">
+        <span class="fw-stock-sym">TSLA</span>
+        <div class="fw-stock-bar-wrap"><div class="fw-stock-bar down" style="width:44%"></div></div>
+        <span class="fw-stock-val">▼ -1.33%</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="container">
+  <div class="section-label">
+    <div class="section-label-line"></div>
+    <span class="section-label-text">WHY MONEY BRIEF</span>
+  </div>
+  <h2 class="section-title">
+    뉴스 그 이상의<br>
+    <em>4가지 차별점</em>
+  </h2>
+  <p class="section-desc">단순히 뉴스를 전달하는 걸 넘어, 투자 판단의 근거를 만들어드립니다.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <span class="feature-icon">🤖</span>
+      <div class="feature-body">
+        <span class="feature-number">01 ·</span>
+        <div class="feature-title">AI 기반 뉴스 중요도 선별</div>
+        <p class="feature-desc">수백 개의 뉴스 중 실제로 시장에 영향을 미치는 뉴스만 골라냅니다. 키워드 가산점과 AI 가중치 알고리즘이 정보 과부하 없이 핵심에만 집중하게 해드립니다.</p>
+        <span class="feature-tag">KEYWORD SCORE + AI WEIGHT</span>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">📊</span>
+      <div class="feature-body">
+        <span class="feature-number">02 ·</span>
+        <div class="feature-title">섹터 영향 분석</div>
+        <p class="feature-desc">뉴스 하나가 어느 섹터에 어떤 영향을 미치는지 명시합니다. 기술·금융·헬스케어·에너지 등 주요 섹터와 대표 종목을 연결해 내 포트폴리오와 직접 비교할 수 있습니다.</p>
+        <span class="feature-tag">SECTOR IMPACT MAPPING</span>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">🐂</span>
+      <div class="feature-body">
+        <span class="feature-number">03 ·</span>
+        <div class="feature-title">Bull & Bear 양면 시각</div>
+        <p class="feature-desc">같은 뉴스도 강세(Bull)와 약세(Bear) 두 가지 시각을 모두 제공합니다. 편향 없이 시장을 바라보는 사고 프레임을 기르고, 스스로 판단하는 힘을 키울 수 있습니다.</p>
+        <span class="feature-tag">DUAL PERSPECTIVE ANALYSIS</span>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">📈</span>
+      <div class="feature-body">
+        <span class="feature-number">04 ·</span>
+        <div class="feature-title">펀더멘탈 + 모멘텀 해설</div>
+        <p class="feature-desc">단기 주가 흐름(모멘텀)과 기업 본질 가치(펀더멘탈)를 함께 해설합니다. 뉴스 하나에서 다차원적 인사이트를 얻어 더 깊은 투자 판단의 근거를 만들어드립니다.</p>
+        <span class="feature-tag">FUNDAMENTAL + MOMENTUM</span>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- BULL BEAR EXAMPLE -->
+<div class="bull-bear">
+  <div class="container">
+  <div class="bull-bear-header">
+    <div class="section-label" style="justify-content:center; margin-bottom:12px;">
+      <div class="section-label-line"></div>
+      <span class="section-label-text">BULL vs BEAR 예시</span>
+      <div class="section-label-line"></div>
+    </div>
+    <h2 class="section-title" style="text-align:center; margin-bottom:0;">이렇게 <em>두 눈으로</em> 봅니다</h2>
+  </div>
+
+  <div style="margin-bottom: 24px;">
+    <div class="sample-news">
+      <div class="sample-news-label">THIS WEEK'S NEWS</div>
+      <div class="sample-news-text">연준(Fed), 기준금리 5.25~5.50% 동결 결정 — "인플레이션이 목표치(2%)로 충분히 하향하고 있다는 확신이 더 필요하다"</div>
+      <div class="sample-tags">
+        <span class="sample-tag">거시경제</span>
+        <span class="sample-tag">금융 섹터</span>
+        <span class="sample-tag">채권</span>
+        <span class="sample-tag">성장주</span>
+        <span class="sample-tag">중요도 ★★★★★</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bull-bear-grid">
+    <div class="bull-side">
+      <div class="side-header">
+        <span class="side-icon">🐂</span>
+        <span class="side-title">BULL POINT — 긍정 시각</span>
+      </div>
+      <div class="side-points">
+        <div class="side-point"><div class="point-dot"></div><span>금리 동결 = 추가 긴축 없음. 시장 유동성이 유지되어 주식 밸류에이션에 우호적</span></div>
+        <div class="side-point"><div class="point-dot"></div><span>인플레이션 완화 추세가 확인될 경우 하반기 금리 인하 기대감 선반영 가능</span></div>
+        <div class="side-point"><div class="point-dot"></div><span>고금리 수혜주(금융주)는 이자마진 유지로 실적 방어력 지속</span></div>
+        <div class="side-point"><div class="point-dot"></div><span>성장주(특히 AI/기술주)는 금리 인하 기대 시 할인율 하락 → 주가 재평가 가능</span></div>
+      </div>
+    </div>
+
+    <div class="vs-divider">
+      <div style="width:100%; height:1px; background:var(--border); position:relative; display:flex; align-items:center; justify-content:center;">
+        <div class="vs-circle">VS</div>
+      </div>
+    </div>
+
+    <div class="bear-side">
+      <div class="side-header">
+        <span class="side-icon">🐻</span>
+        <span class="side-title">BEAR POINT — 부정 시각</span>
+      </div>
+      <div class="side-points">
+        <div class="side-point"><div class="point-dot"></div><span>금리 동결 지속 = 고금리 장기화. 기업 조달 비용 압박이 이익에 반영될 리스크</span></div>
+        <div class="side-point"><div class="point-dot"></div><span>인플레이션 재반등 시 추가 인상 가능성 남아있어 시장 불확실성 유지</span></div>
+        <div class="side-point"><div class="point-dot"></div><span>부동산·소비재 등 금리 민감 섹터의 수요 위축 지속 우려</span></div>
+        <div class="side-point"><div class="point-dot"></div><span>달러 강세 유지로 수출 중심 다국적 기업 실적에 환율 역풍</span></div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="container">
+  <div class="section-label">
+    <div class="section-label-line"></div>
+    <span class="section-label-text">HOW IT WORKS</span>
+  </div>
+  <h2 class="section-title" style="margin-bottom:16px;">
+    매주 이렇게<br><em>인사이트</em>가 도착합니다
+  </h2>
+  <p class="section-desc">구독 후 아무것도 안 해도 됩니다. 매주 분석된 뉴스레터가 이메일로 도착합니다.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num">01</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">AI가 한 주의 핵심 뉴스를 선별합니다</div>
+        <p class="step-desc">수백 개의 미국 경제·증시 뉴스 중 키워드 가산점 + AI 가중치 알고리즘으로 실제로 시장에 영향을 미칠 TOP 뉴스 3~5개를 자동 선별합니다.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num">02</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">각 뉴스에 섹터 영향과 해설을 더합니다</div>
+        <p class="step-desc">선별된 뉴스마다 어떤 섹터와 종목에 영향을 주는지, 배경은 무엇인지를 입문자도 이해할 수 있는 언어로 해설합니다.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num">03</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">Bull & Bear 양면 시각을 제시합니다</div>
+        <p class="step-desc">같은 뉴스에 대한 긍정적 해석(Bull)과 부정적 해석(Bear)을 균형 있게 담아, 독자 스스로 판단의 근거를 만들 수 있도록 돕습니다.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num">04</div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">매주 정해진 시간에 이메일로 도착합니다</div>
+        <p class="step-desc">별도의 앱 설치나 로그인 없이, 구독한 이메일로 매주 분석된 뉴스레터가 도착합니다. 커피 한 잔과 함께 5분이면 한 주 시장 흐름을 파악할 수 있습니다.</p>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER PREVIEW -->
+<section class="preview-section" id="preview">
+  <div class="container">
+  <div class="section-label" style="margin-bottom:16px; justify-content:center;">
+    <div class="section-label-line"></div>
+    <span class="section-label-text">NEWSLETTER PREVIEW</span>
+    <div class="section-label-line"></div>
+  </div>
+  <h2 class="section-title" style="text-align:center; margin-bottom:8px;">
+    실제 <em>뉴스레터</em>는 이렇게 생겼어요
+  </h2>
+  <p style="text-align:center; font-size:14px; color:var(--gray); margin-bottom:48px;">무료 구독으로 아래 내용을 매주 받아보실 수 있습니다</p>
+  </div>
+
+  <!-- ── 실제 뉴스레터 구조 그대로 재현 ── -->
+  <div class="nl-wrap">
+
+    <!-- TOPBAR -->
+    <div style="background:#1a1f36; border-radius:18px 18px 0 0; border-bottom:1px solid #2a3358; padding:10px 18px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span style="font-weight:900; font-size:13px; letter-spacing:0.15em; color:#f59e0b; text-transform:uppercase;">&#9679; FREE</span>
+          <span style="font-size:13px; color:#4a5578; margin-left:10px;">돈공부저장소 · 미국 증시 시황</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:13px; color:#4a5578;">2026-03-09</span>
+          <span style="background:#3a1e1e; color:#f87171; border:1px solid #7f1d1d; border-radius:20px; padding:3px 10px; font-weight:900; font-size:13px;">RISK-OFF</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. HEADLINE -->
+    <div style="background:#0b1020; padding:22px 22px 20px;">
+      <div style="font-weight:900; font-size:22px; line-height:1.3; color:#f1f5f9;">이란 전쟁 장기화 + 가상자산 국채 쇼크 — VIX 29 돌파</div>
+      <div style="font-size:15px; line-height:1.7; color:#8892b0; margin-top:10px;">이란 전쟁 장기화 우려와 가상자산발 국채 시장 교란이 겹치며 VIX가 29를 돌파했다. 오늘 시장은 지정학 리스크와 금융 구조 변화라는 두 개의 충격이 동시에 작동한 날이다.</div>
+    </div>
+
+    <div style="height:14px; background:#0e0e14;"></div>
+
+    <!-- 2. MARKET SNAPSHOT -->
+    <div style="background:#131929; border:1px solid #1e2a45; border-radius:18px; margin:0 14px; padding:18px 20px;">
+      <div style="font-weight:900; font-size:18px; letter-spacing:0.08em; color:#8892b0; text-transform:uppercase; margin-bottom:4px;">&#128202; Market Snapshot</div>
+      <div style="font-size:13px; color:#4a5578; margin-bottom:14px;">&#128200; 상승 <span style="color:#4ade80;">&#9632;</span> 초록 &nbsp;|&nbsp; &#128201; 하락 <span style="color:#f87171;">&#9632;</span> 빨강 &nbsp;|&nbsp; &#9889; VIX는 반대: 상승=<span style="color:#f87171;">&#9632;</span>(공포↑)</div>
+
+      <!-- Row 1 -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+        <div style="background:#0e1525; border:1px solid #1e2a45; border-radius:12px; padding:12px;">
+          <div style="font-size:13px; color:#4a5578; font-weight:700;">S&amp;P 500</div>
+          <div style="font-size:20px; font-weight:900; color:#f1f5f9; margin:4px 0;">6,740.02</div>
+          <div style="font-size:15px; font-weight:900; color:#f87171;">▼ -1.33%</div>
+        </div>
+        <div style="background:#0e1525; border:1px solid #1e2a45; border-radius:12px; padding:12px;">
+          <div style="font-size:13px; color:#4a5578; font-weight:700;">NASDAQ</div>
+          <div style="font-size:20px; font-weight:900; color:#f1f5f9; margin:4px 0;">22,387</div>
+          <div style="font-size:15px; font-weight:900; color:#f87171;">▼ -1.59%</div>
+        </div>
+        <div style="background:#0e1525; border:1px solid #1e2a45; border-radius:12px; padding:12px;">
+          <div style="font-size:13px; color:#4a5578; font-weight:700;">DOW</div>
+          <div style="font-size:20px; font-weight:900; color:#f1f5f9; margin:4px 0;">47,501</div>
+          <div style="font-size:15px; font-weight:900; color:#f87171;">▼ -0.95%</div>
+        </div>
+        <div style="background:#1a0e0e; border:1px solid #3a1e1e; border-radius:12px; padding:12px;">
+          <div style="font-size:13px; color:#4a5578; font-weight:700;">VIX</div>
+          <div style="font-size:20px; font-weight:900; color:#f1f5f9; margin:4px 0;">29.49</div>
+          <div style="font-size:15px; font-weight:900; color:#f87171;">▲ +24.17%</div>
+        </div>
+      </div>
+      <!-- Row 2 -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div style="background:#0e1525; border:1px solid #1e2a45; border-radius:12px; padding:12px;">
+          <div style="font-size:13px; color:#4a5578; font-weight:700;">US10Y</div>
+          <div style="font-size:20px; font-weight:900; color:#f1f5f9; margin:4px 0;">4.13</div>
+          <div style="font-size:15px; font-weight:900; color:#f87171;">▼ -0.31%</div>
+        </div>
+        <div style="background:#0e1525; border:1px solid #1e2a45; border-radius:12px; padding:12px;">
+          <div style="font-size:13px; color:#4a5578; font-weight:700;">DXY</div>
+          <div style="font-size:20px; font-weight:900; color:#f1f5f9; margin:4px 0;">98.86</div>
+          <div style="font-size:15px; font-weight:900; color:#f87171;">▼ -0.14%</div>
+        </div>
+        <div style="background:#0e1525; border:1px solid #1e2a45; border-radius:12px; padding:12px;">
+          <div style="font-size:13px; color:#4a5578; font-weight:700;">WTI</div>
+          <div style="font-size:20px; font-weight:900; color:#f1f5f9; margin:4px 0;">90.9</div>
+          <div style="font-size:15px; font-weight:900; color:#4ade80;">▲ +12.21%</div>
+        </div>
+        <div style="background:#0e1525; border:1px solid #1e2a45; border-radius:12px; padding:12px;">
+          <div style="font-size:13px; color:#4a5578; font-weight:700;">GOLD</div>
+          <div style="font-size:20px; font-weight:900; color:#f1f5f9; margin:4px 0;">5,158</div>
+          <div style="font-size:15px; font-weight:900; color:#4ade80;">▲ +1.84%</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:14px; background:#0e0e14;"></div>
+
+    <!-- 3. TOP NEWS (Free: 2개 공개) -->
+    <div style="background:#131929; border:1px solid #1e2a45; border-radius:18px; margin:0 14px; padding:18px 20px;">
+      <div style="font-weight:900; font-size:18px; letter-spacing:0.08em; color:#8892b0; text-transform:uppercase; margin-bottom:4px;">&#128240; Top 5 News</div>
+      <div style="font-size:13px; color:#4a5578; margin-bottom:16px;">오늘 시장을 움직인 핵심 뉴스와 그 메커니즘 <span style="color:#f59e0b;">— 무료: 2개 공개</span></div>
+
+      <!-- 뉴스 01 -->
+      <div style="background:#0e1525; border:1px solid #1e2a45; border-radius:12px; padding:16px 18px; margin-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <span style="background:#1e2a45; color:#fbbf24; font-size:13px; font-weight:800; padding:2px 8px; border-radius:4px;">가상자산·국채</span>
+          <span style="color:#4a5578; font-size:13px;">01</span>
+        </div>
+        <div style="font-weight:700; font-size:17px; color:#f1f5f9; margin-bottom:6px; line-height:1.5;">가상자산이 미국 국채를 대량 매입 중</div>
+        <div style="font-size:15px; color:#8892b0; line-height:1.7; margin-bottom:8px;">스테이블코인이 미국 국채를 담보로 대량 흡수하며 채권 시장에 새로운 구조적 플레이어로 등장했다.</div>
+        <div style="font-size:15px; color:#8892b0; line-height:1.7;"><b style="color:#fbbf24;">Why:</b> 가상자산이 국채를 대량 보유하면 두 시장이 연결된다. 스테이블코인 위기 → 국채 강제 매각 → 채권 시장 충격의 연결고리가 새로운 시스템 리스크로 부상한다.</div>
+      </div>
+
+      <!-- 뉴스 02 -->
+      <div style="background:#0e1525; border:1px solid #1e2a45; border-radius:12px; padding:16px 18px; margin-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <span style="background:#1e2a45; color:#f87171; font-size:13px; font-weight:800; padding:2px 8px; border-radius:4px;">유가·지정학</span>
+          <span style="color:#4a5578; font-size:13px;">02</span>
+        </div>
+        <div style="font-weight:700; font-size:17px; color:#f1f5f9; margin-bottom:6px; line-height:1.5;">트럼프·이란, 전쟁 출구 신호 없어 — 유가 압박 지속</div>
+        <div style="font-size:15px; color:#8892b0; line-height:1.7; margin-bottom:8px;">트럼프 행정부와 이란 최고지도자 모두 협상 의지를 보이지 않으며 전쟁 장기화 조짐이 뚜렷하다.</div>
+        <div style="font-size:15px; color:#8892b0; line-height:1.7;"><b style="color:#f87171;">Why:</b> 전쟁 장기화 시 호르무즈 해협 공급 차질 우려가 상시화된다. 유가 상승 → CPI 상승 → 연준 금리 인하 기대 후퇴의 경로가 고착화될 수 있다.</div>
+      </div>
+
+      <!-- 잠금: 뉴스 03~05 -->
+      <div style="position:relative; border-radius:12px; overflow:hidden;">
+        <!-- 블러 처리된 뉴스 미리보기 -->
+        <div style="filter:blur(4px); pointer-events:none; opacity:0.4;">
+          <div style="background:#0e1525; border:1px solid #1e2a45; border-radius:12px; padding:16px 18px; margin-bottom:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span style="background:#1e2a45; color:#f87171; font-size:13px; font-weight:800; padding:2px 8px; border-radius:4px;">고용·금리</span>
+              <span style="color:#4a5578; font-size:13px;">03</span>
+            </div>
+            <div style="font-weight:700; font-size:17px; color:#f1f5f9; margin-bottom:6px;">이번 주 주목 변수: 전쟁 격화·고용보고서·오라클 실적</div>
+            <div style="font-size:15px; color:#8892b0; line-height:1.7;">이번 주는 이란 전쟁 뉴스 흐름, 미국 고용보고서 후폭풍, 오라클 실적 발표가 맞물리는 고밀도 이벤트 주간이다.</div>
+          </div>
+        </div>
+        <!-- 잠금 오버레이 -->
+        <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(11,16,32,0.85); backdrop-filter:blur(2px); border-radius:12px; border:1px solid #2a3358; gap:10px;">
+          <div style="font-size:22px;">🔒</div>
+          <div style="font-size:15px; font-weight:900; color:#f1f5f9;">뉴스 03 · 04 · 05 — 구독 후 공개</div>
+          <div style="font-size:13px; color:#4a5578; text-align:center; line-height:1.6;">시장의 연결고리 읽기 · 같은 뉴스 다른 시각<br>내일 시나리오 · 오늘의 개념 카드도 포함됩니다</div>
+          <a href="#subscribe" style="margin-top:6px; background:#f59e0b; color:#0b1020; padding:10px 28px; font-weight:900; font-size:14px; text-decoration:none; border-radius:8px; letter-spacing:0.04em;">무료 구독하기</a>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:14px; background:#0e0e14;"></div>
+
+    <!-- FOOTER -->
+    <div style="background:#0e0e14; border-radius:0 0 18px 18px; padding:14px 18px; text-align:center; font-size:13px; color:#4a5578; border-top:1px solid #1e2a45;">
+      본 리포트는 '돈공부저장소'에서 제공하는 정보이며, 무단 복제 및 상업적 이용을 금지합니다.<br>
+      투자 판단은 개인의 선택으로 '돈공부저장소'는 투자 책임을 지지 않습니다.
+    </div>
+
+  </div><!-- /nl-wrap -->
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+  <div class="container">
+  <div class="section-label" style="margin-bottom:48px;">
+    <div class="section-label-line"></div>
+    <span class="section-label-text">OUR GOAL</span>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-val">1,000</span>
+      <span class="stat-label">3개월 목표 구독자 수<br>무료로 시작, 부담 없이</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val">35%+</span>
+      <span class="stat-label">목표 이메일 오픈율<br>업계 평균(21%)의 1.7배</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val">5min</span>
+      <span class="stat-label">평균 소요 시간<br>커피 한 잔 시간에 읽는 인사이트</span>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="benefits-section">
+  <div class="container">
+  <div class="section-label" style="justify-content:center; margin-bottom:16px;">
+    <div class="section-label-line"></div>
+    <span class="section-label-text">FREE WELCOME GIFT</span>
+    <div class="section-label-line"></div>
+  </div>
+  <h2 class="section-title" style="text-align:center; margin-bottom:8px;">
+    구독하면 <em>바로 받는 것들</em>
+  </h2>
+  <p style="text-align:center; font-size:14px; color:var(--gray); margin-bottom:48px;">무료 구독 즉시, 약속드린 3가지 자료를 바로 보내드립니다</p>
+
+  <div class="benefits-grid">
+
+    <div class="benefit-card">
+      <div class="benefit-icon">📰</div>
+      <div class="benefit-content">
+        <div class="benefit-title">뉴스레터 샘플 3호 바로 읽기</div>
+        <div class="benefit-desc">실제 발행된 머니브리프 뉴스레터 3개를 즉시 열람할 수 있습니다. 구독 전에 퀄리티를 직접 확인하세요.</div>
+      </div>
+      <div class="benefit-badge">즉시 제공</div>
+    </div>
+
+    <div class="benefit-card">
+      <div class="benefit-icon">📊</div>
+      <div class="benefit-content">
+        <div class="benefit-title">주식/재테크 입문 가이드</div>
+        <div class="benefit-desc">미국 주식 처음 시작하는 분들을 위한 기초 가이드. 계좌 개설부터 ETF 입문까지 한 번에 정리했습니다.</div>
+      </div>
+      <div class="benefit-badge">PDF 다운로드</div>
+    </div>
+
+    <div class="benefit-card">
+      <div class="benefit-icon">👜</div>
+      <div class="benefit-content">
+        <div class="benefit-title">포트폴리오 전략 자료</div>
+        <div class="benefit-desc">입문자를 위한 포트폴리오 구성 전략 자료. 섹터 분산부터 리밸런싱까지 실전 가이드를 드립니다.</div>
+      </div>
+      <div class="benefit-badge">PDF 다운로드</div>
+    </div>
+
+  </div>
+
+  <!-- 웰컴 카드 미리보기 -->
+  <div class="welcome-preview">
+    <div class="welcome-card">
+      <div class="welcome-top">
+        <div class="welcome-title">Welcome</div>
+        <div class="welcome-desc">안녕하세요, <span style="color:var(--gold);">구독자</span>님!<br>머니브리프 무료 자료를 신청해주셔서 감사합니다.<br>약속드린 3가지 자료를 바로 보내드립니다.</div>
+      </div>
+      <div class="welcome-buttons">
+        <div class="welcome-btn"><span>📰</span> 뉴스레터 샘플 3호 바로 읽기</div>
+        <div class="welcome-btn"><span>📊</span> 주식/재테크 입문 가이드 다운로드</div>
+        <div class="welcome-btn"><span>👜</span> 포트폴리오 전략 자료 받기</div>
+        <div class="welcome-btn welcome-btn-gold"><span>👉</span> 프리미엄 뉴스레터 구독하기</div>
+      </div>
+    </div>
+    <div class="welcome-caption">← 구독 완료 후 이런 웰컴 메일이 발송됩니다</div>
+  </div>
+  </div><!-- /container -->
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="subscribe">
+  <div class="container">
+  <h2 class="cta-title">
+    뉴스 너머<br>
+    <em>인사이트가 보인다</em>
+  </h2>
+  <p class="cta-desc">
+    매주 AI가 선별한 미국 주식 뉴스 + 섹터 분석 + Bull &amp; Bear 해석.<br>
+    무료로 구독하고, 해석이 있는 투자를 시작하세요.
+  </p>
+
+  <div class="stibee-wrap">
+    <link rel="stylesheet" href="https://resource.stibee.com/subscribe/stb_subscribe_form_style.css">
+    <div id="stb_subscribe">
+      <form action="https://stibee.com/api/v1.0/lists/eIpclX7H2cLs20IO3abnuRyaAl_WPA==/public/subscribers" method="POST" target="_blank" accept-charset="utf-8" class="stb_form" name="stb_subscribe_form" id="stb_subscribe_form" novalidate>
+        <fieldset class="stb_form_set">
+          <label for="stb_email" class="stb_form_set_label">이메일 주소<span class="stb_asterisk">*</span></label>
+          <input type="text" class="stb_form_set_input" id="stb_email" name="email" required="required" placeholder="이메일 주소를 입력하세요">
+          <div class="stb_form_msg_error" id="stb_email_error"></div>
+        </fieldset>
+
+        <div class="stb_form_policy">
+          <label>
+            <input type="checkbox" id="stb_policy" value="stb_policy_true">
+            <span>(필수)</span>
+            <button id="stb_form_modal_open" data-modal="stb_form_policy_modal" class="stb_form_modal_open_btn" type="button">개인정보 수집 및 이용</button>에 동의합니다.
+          </label>
+          <div class="stb_form_msg_error" id="stb_policy_error"></div>
+          <div class="stb_form_modal stb_form_policy_text blind" id="stb_form_policy_modal">
+            <div class="stb_form_modal_body">
+              <h1 class="stb_form_modal_title">개인정보 수집 및 이용</h1>
+              <div class="stb_form_modal_text">뉴스레터 발송을 위한 최소한의 개인정보를 수집하고 이용합니다. 수집된 정보는 발송 외 다른 목적으로 이용되지 않으며, 서비스가 종료되거나 구독을 해지할 경우 즉시 파기됩니다.</div>
+              <div class="stb_form_modal_btn">
+                <button id="stb_form_modal_close" class="stb_form_modal_close_btn" data-modal="stb_form_policy_modal" type="button">닫기</button>
+              </div>
+            </div>
+            <div class="stb_form_modal_bg" id="stb_form_modal_bg"></div>
+          </div>
+        </div>
+
+        <div class="stb_form_result" id="stb_form_result"></div>
+
+        <fieldset class="stb_form_set_submit">
+          <button type="submit" class="stb_form_submit_button" id="stb_form_submit_button">무료 구독하기</button>
+        </fieldset>
+      </form>
+    </div>
+    <script type="text/javascript" src="https://resource.stibee.com/subscribe/stb_subscribe_form.js"></script>
+  </div>
+
+  <p class="cta-note">스팸 없음 · 언제든 구독 취소 가능 · 돈공부저장소 운영</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+    <div>
+      <div class="footer-logo">MONEY BRIEF</div>
+      <div class="footer-by">by 돈공부저장소 | 뉴스 너머, 인사이트가 보인다</div>
+    </div>
+    <div class="footer-right">
+      미국 주식 입문자를 위한 뉴스 해석 뉴스레터<br>
+      © 2025 돈공부저장소 · 머니브리프
+    </div>
+  </div>
+</footer>
+
+<script>
+  function handleSubmit(e) {
+    e.preventDefault();
+    const email = document.getElementById('emailInput').value;
+    const btn = e.target.querySelector('button');
+    btn.textContent = '구독 신청 완료! ✓';
+    btn.style.background = '#00C896';
+    btn.style.color = '#fff';
+    btn.style.borderColor = '#00C896';
+    setTimeout(() => {
+      btn.textContent = '무료 구독하기';
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+      document.getElementById('emailInput').value = '';
+    }, 3000);
+  }
+
+  // Floating widget: 페이지 로드 후 1초 뒤 표시, 구독 섹션 근처에서 숨김
+  const widget = document.getElementById('floatingWidget');
+  const subscribeSec = document.getElementById('subscribe');
+
+  function updateWidget() {
+    const scrollY = window.scrollY;
+    const subTop = subscribeSec ? subscribeSec.getBoundingClientRect().top + scrollY - 200 : 99999;
+
+    if (scrollY > 100 && scrollY < subTop) {
+      widget.classList.add('visible');
+    } else {
+      widget.classList.remove('visible');
+    }
+  }
+
+  window.addEventListener('scroll', updateWidget, { passive: true });
+  setTimeout(updateWidget, 800);
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.feature-card, .step, .stat-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
